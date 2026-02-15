@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BTX Clinic</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#18f7a8">
+<style>
+body{margin:0;font-family:Segoe UI;background:#0f172a;color:#e6eefc}
+header{padding:20px;text-align:center;background:#111;border-bottom:2px solid #18f7a8}
+section{padding:20px}
+.card{background:#111;padding:15px;margin-bottom:15px;border-radius:12px;border:1px solid #18f7a8}
+button{background:#18f7a8;color:#000;border:none;padding:8px 14px;border-radius:8px;cursor:pointer}
+input,textarea,select{width:100%;margin-top:5px;margin-bottom:10px;padding:6px;border-radius:6px;border:none}
+#calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-top:10px}
+.day{background:#1e293b;padding:10px;border-radius:8px;cursor:pointer}
+.day:hover{background:#334155}
+</style>
+</head>
+<body>
+
+<header>
+<h2 id="proName">Dr. Orlando Abreu Gomes da Silva</h2>
+<p>📞 91999873835 / 91992980333</p>
+<p>📧 orlandodentista@outlook.com</p>
+</header>
+
+<section>
+<div class="card">
+<h3>Agenda</h3>
+<input type="date" id="date">
+<input placeholder="Nome do paciente" id="name">
+<input placeholder="Procedimento" id="proc">
+<button onclick="add()">Salvar</button>
+</div>
+
+<div class="card">
+<h3>Calendário</h3>
+<div id="calendar"></div>
+</div>
+
+<div class="card">
+<h3>Agendamentos do dia</h3>
+<div id="list"></div>
+</div>
+</section>
+
+<script>
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js')}
+
+let data=JSON.parse(localStorage.getItem('btx')||'[]');
+
+function save(){localStorage.setItem('btx',JSON.stringify(data))}
+
+function add(){
+let d=document.getElementById('date').value;
+let n=document.getElementById('name').value;
+let p=document.getElementById('proc').value;
+if(!d||!n)return alert('Preencha data e nome');
+data.push({d,n,p});
+save();
+render();
+}
+
+function render(){
+let list=document.getElementById('list');
+let selected=document.getElementById('date').value;
+list.innerHTML='';
+data.filter(a=>a.d===selected).forEach(a=>{
+list.innerHTML+=`<p><strong>${a.n}</strong> - ${a.p}</p>`;
+});
+}
+
+function renderCalendar(){
+let cal=document.getElementById('calendar');
+cal.innerHTML='';
+for(let i=1;i<=30;i++){
+let div=document.createElement('div');
+div.className='day';
+div.innerText=i;
+cal.appendChild(div);
+}
+}
+
+renderCalendar();
+render();
+</script>
+
+</body>
+</html>
